@@ -18,8 +18,16 @@ public class NumberUtil extends NumberUtils {
   }
 
   public final static int toInt(Object obj, int dft) {
-    String str = ObjectUtil.toString(obj, String.valueOf(dft));
+    String str = StringUtil.toString(obj, StringUtil.toString(dft));
     return toInt(str);
+  }
+  public final static long toLong(Object obj) {
+    return toLong(obj, 0);
+  }
+
+  public final static long toLong(Object obj, int dft) {
+    String str = StringUtil.toString(obj, StringUtil.toString(dft));
+    return toLong(str);
   }
 
   public final static boolean isModify(long l, int mod) {
