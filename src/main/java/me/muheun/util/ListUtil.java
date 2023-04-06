@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ListUtil { // extends ListUtils {
 
@@ -33,6 +35,10 @@ public class ListUtil { // extends ListUtils {
 
   public final static <T> List<T> toList(T... objs) {
     return Arrays.asList(objs);
+  }
+
+  public static <T> Set<T> fromArrayToSet(T[] array) {
+    return new HashSet<T>(Arrays.asList(array));
   }
 
   public final static <T> List<T> syncList(T... objs) {
