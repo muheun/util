@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,14 @@ import org.json.JSONObject;
 @Slf4j
 public class JSON {
 
-  private static JsonNodeFactory factory = JsonNodeFactory.withExactBigDecimals(true);
-  private static ObjectMapper mapper = new ObjectMapper().setNodeFactory(factory);
+  private static final JsonNodeFactory factory;
+  private static final ObjectMapper mapper;
+
+  static {
+    factory = JsonNodeFactory.withExactBigDecimals(true);
+    mapper = new ObjectMapper().setNodeFactory(factory);
+    mapper.registerModule(new JavaTimeModule());
+  }
 
   public static Builder.MapBuilder createObject() {
     return create(MapUtil.newMap());

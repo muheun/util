@@ -50,6 +50,10 @@ public class Paging<T> implements Serializable {
   }
 
   public Paging<T> calcPaging(int elementCount) {
+    return calcPaging(elementCount);
+  }
+
+  public Paging<T> calcPaging(long elementCount) {
 
     int totalPage = 0;
     long allCount = elementCount;
