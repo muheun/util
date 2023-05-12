@@ -50,7 +50,7 @@ public class Paging<T> implements Serializable {
   }
 
   public Paging<T> calcPaging(int elementCount) {
-    return calcPaging(elementCount);
+    return calcPaging(NumberUtil.toLong(elementCount));
   }
 
   public Paging<T> calcPaging(long elementCount) {

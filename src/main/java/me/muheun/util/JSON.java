@@ -1,6 +1,7 @@
 package me.muheun.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import me.muheun.exception.JSONParseException;
 import me.muheun.util.JSON.Builder.CollectionBuilder;
 import me.muheun.util.JSON.Builder.MapBuilder;
 import org.json.JSONArray;
@@ -83,6 +85,18 @@ public class JSON {
 
   private static Builder.CollectionBuilder create(List<Object> list) {
     return Builder.newList(list);
+  }
+
+  public static Map<String, Object> merge(Map<String, Object> originMap, Map<String, Object> newMap) {
+    try {
+      return mapper.convertValue(
+          mapper.readerForUpdating(originMap).readValue(mapper.writeValueAsString(newMap)),
+          new TypeReference<Map<String, Object>>() {
+          }
+      );
+    } catch (JsonProcessingException e) {
+      throw new JSONParseException(e);
+    }
   }
 
   static class Builder {
