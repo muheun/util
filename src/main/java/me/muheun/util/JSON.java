@@ -259,8 +259,8 @@ public class JSON {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
       }
     } catch (IOException e) {
-      log.error("error: {}", e);
-      return "";
+      log.debug("Parsing 에러로 인해 리턴값은 toString().", e);
+      return StringUtil.toString(obj);
     }
   }
 }

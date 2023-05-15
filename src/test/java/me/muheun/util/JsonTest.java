@@ -10,6 +10,14 @@ import org.junit.Test;
 public class JsonTest {
 
   @Test
+  public void stringTest() {
+
+    Debug.json("a25fba73-3611-4ae2-89d1-531555ce3965");
+
+
+  }
+
+  @Test
   public void mergeMap() {
 
     Map<String, Object> map1 = MapUtil.chainKeyMap().put("1", "a").toMap();
