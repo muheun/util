@@ -226,7 +226,7 @@ public class JSON {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
       }
     } catch (IOException e) {
-      log.debug("parse error.", e);
+      log.debug("Parsing 에러로 인해 리턴값은 toString().", e);
       return StringUtil.toString(obj);
     }
   }
