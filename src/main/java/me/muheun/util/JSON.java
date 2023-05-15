@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.muheun.exception.JSONParseException;
 import me.muheun.util.JSON.Builder.CollectionBuilder;
 import me.muheun.util.JSON.Builder.MapBuilder;
+import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -208,6 +209,38 @@ public class JSON {
       valid = false;
     }
     return valid;
+  }
+
+  public static JSONObject findJSONObject(JSONObject json, String path) {
+    if (StringUtil.isBlank(path))
+      return null;
+    if (json == null)
+      return null;
+
+    String[] paths = StringUtil.split(path, "./");
+
+    String firstPath = paths[0];
+    if (paths.length == 1) {
+      return json.getJSONObject(path);
+    } else {
+      return findJSONObject(json.getJSONObject(firstPath), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+    }
+  }
+
+  public static JSONArray findJSONArray(JSONObject json, String path) {
+    if (StringUtil.isBlank(path))
+      return null;
+    if (json == null)
+      return null;
+
+    String[] paths = StringUtil.split(path, "./");
+
+    String firstPath = paths[0];
+    if (paths.length == 1) {
+      return json.getJSONArray(path);
+    } else {
+      return findJSONArray(json.getJSONObject(firstPath), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+    }
   }
 
   public static String prettyString(Object obj) {
