@@ -227,7 +227,7 @@ public class JSON {
       }
     } catch (IOException e) {
       log.error("error: {}", e);
-      return "";
+      return StringUtil.toString(obj);
     }
   }
 }
