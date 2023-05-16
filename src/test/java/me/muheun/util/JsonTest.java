@@ -2,6 +2,7 @@ package me.muheun.util;
 
 import java.util.Map;
 
+import me.muheun.util.JSON.Builder.MapBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,19 +64,23 @@ public class JsonTest {
     Map<String, Object> map1_1 = MapUtil.chainKeyMap().put("1-1", "c").toMap();
     Map<String, Object> map1_2 = MapUtil.chainKeyMap().put("1-2", "c").toMap();
     Map<String, Object> map1_1_1 = MapUtil.chainKeyMap().put("1-1-1", "d").toMap();
-    Map<String, Object> map1_1_2 = MapUtil.chainKeyMap().put("1-1-2", "d").toMap();
+    Map<String, Object> map1_1_2 = MapUtil.chainKeyMap().put("1-1-2", "5").toMap();
 
     map1.put("1-1", map1_1);
     map1.put("1-2", map1_2);
     map1_1.put("1-1-1", map1_1_1);
     map1_1.put("1-1-2", map1_1_2);
 
-
-    JSONObject jobj = JSON.createObject(map1).build();
+    MapBuilder builder = JSON.createObject(map1);
+    JSONObject jobj = builder.build();
 
 
     Debug.debug(jobj);
     Debug.debug(JSON.findJSONObject(jobj, "1-1/1-1-1"));
+    Debug.debug(builder.getString("1-1/1-1-1/1-1-1"));
+    Debug.debug(builder.getInt("1-1/1-1-2/1-1-2"));
+    Debug.debug(builder.getDouble("1-1/1-1-2/1-1-2"));
+
   }
 
 

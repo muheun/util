@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -102,7 +103,10 @@ public class JSON {
     }
   }
 
-  static class Builder {
+  public static class Builder {
+
+    private Builder() {
+    }
 
     private static MapBuilder newMap(Map<String, Object> map) {
       return new MapBuilder(map);
@@ -112,7 +116,7 @@ public class JSON {
       return new CollectionBuilder(list);
     }
 
-    public static class CollectionBuilder {
+    public static class CollectionBuilder implements Iterable<Object> {
 
       public CollectionBuilder(List<Object> list) {
         this.list = new ArrayList<>(list);
@@ -155,6 +159,12 @@ public class JSON {
           return "[]";
         }
       }
+
+      @Override
+      public Iterator<Object> iterator() {
+        return list.iterator();
+      }
+
     }
 
     public static class MapBuilder {
@@ -200,6 +210,26 @@ public class JSON {
           return "{}";
         }
       }
+
+      public MapBuilder getJSONObject(String path) {
+        return createObject(findJSONObject(map, path));
+      }
+
+      public CollectionBuilder getJSONArray(String path) {
+        return createArray(findJSONArray(map, path));
+      }
+
+      public String getString(String path) {
+        return findString(map, path);
+      }
+
+      public int getInt(String path) {
+        return NumberUtil.toInt(findString(map, path));
+      }
+
+      public double getDouble(String path) {
+        return NumberUtil.toDouble(findString(map, path));
+      }
     }
   }
 
@@ -213,35 +243,66 @@ public class JSON {
     return valid;
   }
 
-  public static JSONObject findJSONObject(JSONObject json, String path) {
-    if (StringUtil.isBlank(path))
-      return null;
-    if (json == null)
-      return null;
+  public static String findString(Map<String, Object> map, String path) {
+    return findString(new JSONObject(map), path);
+  }
 
+  public static String findString(JSONObject json, String path) {
+    if (StringUtil.isBlank(path)) {
+      return null;
+    }
+    if (json == null) {
+      return null;
+    }
     String[] paths = StringUtil.split(path, "./");
+    String firstPath = paths[0];
+    if (paths.length == 1) {
+      return json.optString(path);
+    } else {
+      return findString(json.optJSONObject(firstPath, new JSONObject()),
+          StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+    }
+  }
 
+  public static JSONObject findJSONObject(Map<String, Object> map, String path) {
+    return findJSONObject(new JSONObject(map), path);
+  }
+
+  public static JSONObject findJSONObject(JSONObject json, String path) {
+    if (StringUtil.isBlank(path)) {
+      return null;
+    }
+    if (json == null) {
+      return null;
+    }
+    String[] paths = StringUtil.split(path, "./");
     String firstPath = paths[0];
     if (paths.length == 1) {
       return json.getJSONObject(path);
     } else {
-      return findJSONObject(json.optJSONObject(firstPath, new JSONObject()), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+      return findJSONObject(json.optJSONObject(firstPath, new JSONObject()),
+          StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
     }
   }
 
+  public static JSONArray findJSONArray(Map<String, Object> map, String path) {
+    return findJSONArray(new JSONObject(map), path);
+  }
+
   public static JSONArray findJSONArray(JSONObject json, String path) {
-    if (StringUtil.isBlank(path))
+    if (StringUtil.isBlank(path)) {
       return null;
-    if (json == null)
+    }
+    if (json == null) {
       return null;
-
+    }
     String[] paths = StringUtil.split(path, "./");
-
     String firstPath = paths[0];
     if (paths.length == 1) {
       return json.optJSONArray(path);
     } else {
-      return findJSONArray(json.optJSONObject(firstPath, new JSONObject()), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+      return findJSONArray(json.optJSONObject(firstPath, new JSONObject()),
+          StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
     }
   }
 
