@@ -2,6 +2,7 @@ package me.muheun.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -28,6 +29,7 @@ public class JSON {
     factory = JsonNodeFactory.withExactBigDecimals(true);
     mapper = new ObjectMapper().setNodeFactory(factory);
     mapper.registerModule(new JavaTimeModule());
+    mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
   }
 
   public static Builder.MapBuilder createObject() {
