@@ -223,7 +223,7 @@ public class JSON {
     if (paths.length == 1) {
       return json.getJSONObject(path);
     } else {
-      return findJSONObject(json.getJSONObject(firstPath), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+      return findJSONObject(json.optJSONObject(firstPath, new JSONObject()), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
     }
   }
 
@@ -237,9 +237,9 @@ public class JSON {
 
     String firstPath = paths[0];
     if (paths.length == 1) {
-      return json.getJSONArray(path);
+      return json.optJSONArray(path);
     } else {
-      return findJSONArray(json.getJSONObject(firstPath), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+      return findJSONArray(json.optJSONObject(firstPath, new JSONObject()), StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
     }
   }
 
