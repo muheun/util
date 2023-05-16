@@ -230,6 +230,10 @@ public class JSON {
       public double getDouble(String path) {
         return NumberUtil.toDouble(findString(map, path));
       }
+
+      public MapBuilder path(String path) {
+        return createObject(findJSONObject(map, path));
+      }
     }
   }
 

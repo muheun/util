@@ -74,12 +74,12 @@ public class JsonTest {
     MapBuilder builder = JSON.createObject(map1);
     JSONObject jobj = builder.build();
 
+    builder = builder.path("1-1");
 
-    Debug.debug(jobj);
     Debug.debug(JSON.findJSONObject(jobj, "1-1/1-1-1"));
-    Debug.debug(builder.getString("1-1/1-1-1/1-1-1"));
-    Debug.debug(builder.getInt("1-1/1-1-2/1-1-2"));
-    Debug.debug(builder.getDouble("1-1/1-1-2/1-1-2"));
+    Debug.debug(builder.getString("1-1-1/1-1-1"));
+    Debug.debug(builder.getInt("1-1-2/1-1-2"));
+    Debug.debug(builder.getDouble("1-1-2/1-1-2"));
 
   }
 
