@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import me.muheun.exception.JSONParseException;
 import me.muheun.util.JSON.Builder.CollectionBuilder;
@@ -191,6 +192,10 @@ public class JSON {
 
       public Map<String, Object> toMap() {
         return map;
+      }
+
+      public Map<String, Object> toSortedMap() {
+        return new TreeMap<>(map);
       }
 
       public JSONObject build() {
