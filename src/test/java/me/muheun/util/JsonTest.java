@@ -77,6 +77,7 @@ public class JsonTest {
     builder = builder.path("1-1");
 
     Debug.debug(JSON.findJSONObject(jobj, "1-1/1-1-1"));
+    Debug.debug(builder.getJSONObject("1-1/1-1-1", new JSONObject().put("1-1/1-1-1", "dddd")));
     Debug.debug(builder.getString("1-1-1/1-1-1"));
     Debug.debug(builder.getInt("1-1-2/1-1-2"));
     Debug.debug(builder.getDouble("1-1-2/1-1-2"));

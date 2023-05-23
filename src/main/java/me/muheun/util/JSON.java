@@ -217,7 +217,11 @@ public class JSON {
       }
 
       public MapBuilder getJSONObject(String path) {
-        return createObject(findJSONObject(map, path));
+        return getJSONObject(path, new JSONObject());
+      }
+
+      public MapBuilder getJSONObject(String path, JSONObject defaultValue) {
+        return createObject(findJSONObject(map, path, defaultValue));
       }
 
       public CollectionBuilder getJSONArray(String path) {
@@ -274,10 +278,18 @@ public class JSON {
   }
 
   public static JSONObject findJSONObject(Map<String, Object> map, String path) {
-    return findJSONObject(new JSONObject(map), path);
+    return findJSONObject(map, path, new JSONObject());
   }
 
   public static JSONObject findJSONObject(JSONObject json, String path) {
+    return findJSONObject(json, path, new JSONObject());
+  }
+
+  public static JSONObject findJSONObject(Map<String, Object> map, String path, JSONObject defaultValue) {
+    return findJSONObject(new JSONObject(map), path, defaultValue);
+  }
+
+  public static JSONObject findJSONObject(JSONObject json, String path, JSONObject defaultValue) {
     if (StringUtil.isBlank(path)) {
       return null;
     }
@@ -287,10 +299,10 @@ public class JSON {
     String[] paths = StringUtil.split(path, "./");
     String firstPath = paths[0];
     if (paths.length == 1) {
-      return json.getJSONObject(path);
+      return json.optJSONObject(path, defaultValue);
     } else {
       return findJSONObject(json.optJSONObject(firstPath, new JSONObject()),
-          StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."));
+          StringUtil.join(ArrayUtils.subarray(paths, 1, paths.length), "."), defaultValue);
     }
   }
 
