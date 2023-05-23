@@ -167,6 +167,10 @@ public class JSON {
         return list.iterator();
       }
 
+      public void print() {
+        Debug.json(list);
+      }
+
     }
 
     public static class MapBuilder {
@@ -246,6 +250,10 @@ public class JSON {
 
       public MapBuilder path(String path) {
         return createObject(findJSONObject(map, path));
+      }
+
+      public void print() {
+        Debug.json(map);
       }
     }
   }

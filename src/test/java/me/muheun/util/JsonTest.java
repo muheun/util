@@ -80,6 +80,8 @@ public class JsonTest {
 
     builder = builder.path("1-1");
 
+    builder.print();
+
     Debug.debug(JSON.findJSONObject(jobj, "1-1/1-1-1"));
     Debug.debug(builder.getJSONObject("1-1/1-1-1", new Person()));
     Debug.debug(builder.getString("1-1-1/1-1-1"));
