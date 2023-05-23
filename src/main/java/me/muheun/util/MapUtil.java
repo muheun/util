@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class MapUtil {
   public final static Map EMPTY = Collections.EMPTY_MAP;
@@ -25,6 +26,10 @@ public class MapUtil {
 
   public final static <K, V> Map<K, V> newOrdereddMap() {
     return new LinkedHashMap<K, V>();
+  }
+
+  public final static <String, V> Map<String, V> newTreeMap() {
+    return new TreeMap<String,V>();
   }
 
   public static <K, T> Map<K, T> create(K key, T value) {
