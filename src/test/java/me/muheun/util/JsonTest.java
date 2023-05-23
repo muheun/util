@@ -1,7 +1,11 @@
 package me.muheun.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.muheun.util.JSON.Builder.MapBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONArray;
@@ -77,7 +81,7 @@ public class JsonTest {
     builder = builder.path("1-1");
 
     Debug.debug(JSON.findJSONObject(jobj, "1-1/1-1-1"));
-    Debug.debug(builder.getJSONObject("1-1/1-1-1", new JSONObject().put("1-1/1-1-1", "dddd")));
+    Debug.debug(builder.getJSONObject("1-1/1-1-1", new Person()));
     Debug.debug(builder.getString("1-1-1/1-1-1"));
     Debug.debug(builder.getInt("1-1-2/1-1-2"));
     Debug.debug(builder.getDouble("1-1-2/1-1-2"));
@@ -85,6 +89,11 @@ public class JsonTest {
   }
 
 
-
+  @Getter
+  @Setter
+  class Person {
+    private String name = "";
+    private int age;
+  }
 
 }

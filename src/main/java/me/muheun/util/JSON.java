@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -220,6 +221,9 @@ public class JSON {
         return getJSONObject(path, new JSONObject());
       }
 
+      public MapBuilder getJSONObject(String path, Object defaultValue) {
+        return createObject(findJSONObject(map, path, createObject(defaultValue).build()));
+      }
       public MapBuilder getJSONObject(String path, JSONObject defaultValue) {
         return createObject(findJSONObject(map, path, defaultValue));
       }
