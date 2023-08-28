@@ -90,6 +90,13 @@ public class JsonTest {
 
   }
 
+  @Test
+  public void toStringTest() {
+    System.out.println(String.valueOf(new JsonTest()));
+    System.out.println(StringUtil.toString(null));
+    System.out.println(StringUtil.toString(null));
+  }
+
 
   @Getter
   @Setter

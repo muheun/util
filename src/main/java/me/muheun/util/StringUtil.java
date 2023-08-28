@@ -1,279 +1,235 @@
 package me.muheun.util;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-
 import org.apache.commons.lang3.StringUtils;
 
-public class StringUtil extends StringUtils {
+public abstract class StringUtil extends StringUtils {
 
-  public final static String T = "T";
-  public final static String TRUE = "TRUE";
+	private StringUtil() {
+	}
 
+	public final static String T = "T";
+	public final static String TRUE = "TRUE";
 
-  // for jdk8 script engine
-  public static boolean isBlank(String val) {
-    return StringUtils.isBlank(val);
-  }
+	// for jdk8 script engine
+	public static boolean isBlank(String val) {
+		return StringUtils.isBlank(val);
+	}
 
-  public static boolean isEmpty(String val) {
-    return StringUtils.isEmpty(val);
-  }
+	public static boolean isEmpty(String val) {
+		return StringUtils.isEmpty(val);
+	}
 
-  public static boolean isEmpty(Object obj) {
-    return StringUtils.isEmpty(toString(obj, EMPTY));
-  }
+	public static boolean isEmpty(Object obj) {
+		return isEmpty(toString(obj, EMPTY));
+	}
 
-  public static boolean isBlank(Object object) {
-    return isBlank(toString(object, EMPTY));
-  }
+	public static boolean isBlank(Object object) {
+		return isBlank(toString(object, EMPTY));
+	}
 
-  // for jdk8 script engine
+	public static boolean isAlphaNumericUnderBar(String str) {
+		if (str == null) {
+			return false;
+		}
+		return str.matches("[a-zA-Z0-9_]+");
+	}
 
+	public static String coalesce(String... strs) {
+		for (String str : strs) {
+			if (isNotBlank(str)) {
+				return str;
+			}
+		}
+		return null;
+	}
 
-  public static boolean isAlphanumericUnderbar(String str) {
+	public static boolean isSmallAlphaNumericUnderBar(String str) {
+		return str != null && str.matches("[a-z0-9_]+");
+	}
 
-    if (str == null) {
-      return false;
-    }
-    char[] chars = str.toCharArray();
-    for (int i = 0, last = chars.length; i < last; i++) {
-      char ch = chars[i];
-      if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_') {
-        continue;
-      } else {
-        return false;
-      }
-    }
-    return true;
-  }
+	public static boolean isIncludeIgnoreCase(String[] array, String arg) {
+		if ((array == null) || array.length == 0 || arg == null) {
+			return false;
+		}
+		for (String str : array) {
+			if (arg.equalsIgnoreCase(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-  public static String coalesce(String... strs) {
-    for (String str : strs) {
-      if (isNotBlank(str)) {
-        return str;
-      }
-    }
-    return null;
-  }
+	public static String join(int[] ints) {
+		return join(ints, ',');
+	}
 
-  public static boolean isSmallAlphaNumUnderBar(String str) {
+	public static String join(int[] ints, char c) {
+		String[] s = new String[ints.length];
+		for (int i = 0; i < s.length; i++) {
+			s[i] = toString(ints[i]);
+		}
+		return StringUtils.join(s, c);
+	}
 
-    if (str == null) {
-      return false;
-    }
-    char[] chars = str.toCharArray();
-    for (int i = 0, last = chars.length; i < last; i++) {
-      char ch = chars[i];
-      if ((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_') {
-        continue;
-      } else {
-        return false;
-      }
-    }
-    return true;
-  }
+	public static String[] splitWorker(String str, String separator) {
+		if (separator == null) {
+			return split(str);
+		} else if (separator.length() == 1) {
+			return split(str, separator);
+		} else {
+			List<String> list = ListUtil.newList();
+			int idx;
+			while (true) {
+				idx = str.indexOf(separator);
+				if (idx == -1) {
+					list.add(str);
+					break;
+				}
+				String split = str.substring(0, idx);
+				if (isNotEmpty(split)) {
+					list.add(split);
+				}
+				str = str.substring(idx + separator.length());
+			}
+			return list.toArray(new String[0]);
+		}
+	}
 
-  public static boolean isIncludeIgnoreCase(String[] array, String arg) {
+	public static String escapeControlChar(String str) {
+		char[] charArray = str.toCharArray();
+		char[] target = new char[charArray.length];
 
-    if ((array == null) || array.length == 0 || arg == null) {
-      return false;
-    }
+		int k = 0;
+		for (char ch : charArray) {
+			// if (charArray[i] >= 32 || charArray[i] == '\n' || charArray[i] ==
+			// '\r' || charArray[i] == '\t') {
+			if (Character.isIdentifierIgnorable(ch)) {
+				continue;
+			}
+			if (ch >= 32 || ch == '\n' || ch == '\r' || ch == '\t') {
+				target[k++] = ch;
+			}
+		}
+		char[] result = new char[k];
+		System.arraycopy(target, 0, result, 0, k);
 
-    for (int i = 0, length = array.length; i < length; ++i) {
-      if (arg.equalsIgnoreCase(array[i])) {
-        return true;
-      }
-    }
-    return false;
-  }
+		return new String(result);
+	}
 
-  public static String join(int[] ints) {
-    return join(ints, ',');
-  }
+	public static String escapeControlChar2(String str) {
+		char[] charArray = str.toCharArray();
+		StringBuilder buffer = new StringBuilder();
+		for (char ch : charArray) {
+			if (ch >= 32 || ch == '\n' || ch == '\r' || ch == '\t') {
+				buffer.append(ch);
+			}
+		}
+		return buffer.toString();
+	}
 
-  public static String join(int[] ints, char c) {
-    String[] s = new String[ints.length];
-    for (int i = 0; i < s.length; i++) {
-      s[i] = String.valueOf(ints[i]);
-    }
+	public static Vector<Object> listToVector(List<Object> list) {
+		return new Vector<>(list);
 
-    return StringUtils.join(s, c);
-  }
+	}
 
-  public static String[] splitWorker(String str, String separator) {
+	public static Vector<Object> arrayToVector(Object[] obj) {
+		return new Vector<>(Arrays.asList(obj));
+	}
 
-    if (separator == null) {
-      return split(str);
-    } else if (separator.length() == 1) {
-      return split(str, separator);
-    } else {
-      List<String> list = new ArrayList<String>();
+	public static boolean toBoolean(String str) {
+		if (isBlank(str)) {
+			return false;
+		}
+		return "T".equalsIgnoreCase(str) || "TRUE".equalsIgnoreCase(str);
+	}
 
-      int idx = 0;
-      while (true) {
-        idx = str.indexOf(separator);
-        if (idx == -1) {
-          list.add(str);
-          break;
-        }
-        String split = str.substring(0, idx);
-        if (StringUtils.isNotEmpty(split)) {
-          list.add(split);
-        }
-        str = str.substring(idx + separator.length());
-      }
-      return list.toArray(new String[0]);
-    }
-  }
+	public static int[] stringToArrayInt(String arrIntVal) {
+		return stringToArrayInt(arrIntVal, ",");
+	}
 
-  public static String escapeControlChar(String str) {
-    char[] charArray = str.toCharArray();
-    char[] target = new char[charArray.length];
+	public static int[] stringToArrayInt(String arrIntVal, String div) {
+		String[] strArtIds = StringUtils.split(arrIntVal, div);
+		int[] artIds = new int[strArtIds.length];
+		for (int i = 0; i < strArtIds.length; i++) {
+			artIds[i] = Integer.parseInt(strArtIds[i]);
+		}
+		return artIds;
+	}
 
-    int k = 0;
-    for (int i = 0; i < charArray.length; i++) {
-      // if (charArray[i] >= 32 || charArray[i] == '\n' || charArray[i] ==
-      // '\r' || charArray[i] == '\t') {
-      if (Character.isIdentifierIgnorable(charArray[i])) {
-        continue;
-      }
-      if (charArray[i] >= 32 || charArray[i] == '\n' || charArray[i] == '\r' || charArray[i] == '\t') {
-        target[k++] = charArray[i];
-      } else {
-      }
-    }
+	private static final long byteSize = 1024;
 
-    char[] result = new char[k];
-    System.arraycopy(target, 0, result, 0, k);
+	public static String toFileSize(long size) {
+		NumberFormat nf = NumberFormat.getInstance();
+		long result;
+		if (size < byteSize) {
+			result = (size != 0) ? 1 : 0;
+		} else {
+			long modSize = size % byteSize;
+			if (modSize != 0) {
+				result = (size / byteSize) + 1;
 
-    return new String(result);
-  }
+			} else {
+				result = (size / byteSize);
+			}
+		}
+		return nf.format(result) + " KB";
+	}
 
-  public static String escapeControlChar2(String str) {
-    char charArray[] = str.toCharArray();
+	public static String filterHTML(String value) {
+		if (value == null) {
+			return (null);
+		}
+		char[] content = new char[value.length()];
+		value.getChars(0, value.length(), content, 0);
+		StringBuilder result = new StringBuilder(content.length + 50);
+		for (char ch : content) {
+			switch (ch) {
+				case '<':
+					result.append("&lt;");
+					break;
+				case '>':
+					result.append("&gt;");
+					break;
+				case '&':
+					result.append("&amp;");
+					break;
+				case '"':
+					result.append("&quot;");
+					break;
+				case '\'':
+					result.append("&#39;");
+					break;
+				case ' ':
+					result.append("&nbsp;");
+					break;
+				default:
+					result.append(ch);
+			}
+		}
+		return (result.toString());
+	}
 
-    StringBuilder buffer = new StringBuilder();
-    for (int i = 0; i < charArray.length; i++) {
-      if (charArray[i] >= 32 || charArray[i] == '\n' || charArray[i] == '\r' || charArray[i] == '\t') {
-        buffer.append(charArray[i]);
-      }
-    }
+	public static String toString(Object value) {
+		return toString(value, EMPTY);
+	}
 
-    return buffer.toString();
-  }
+	public static boolean isBetween(String value, String start, String end) {
+		return startsWith(value, start) && endsWith(value, end);
+	}
 
-  public static Vector<Object> listToVector(List<Object> list) {
-    Vector<Object> vector = new Vector<Object>();
-    vector.addAll(list);
-    return vector;
+	public static String toString(Object value, String defaultString) {
+		return (value == null) ? defaultString : value.toString();
+	}
 
-  }
-
-  public static Vector<Object> arrayToVector(Object[] obj) {
-    Vector<Object> vector = new Vector<Object>();
-    for (int i = 0, last = obj.length; i < last; i++) {
-      vector.add(obj[i]);
-    }
-
-    return vector;
-  }
-
-  public final static boolean toBoolean(String str) {
-    if (StringUtil.isBlank(str)) {
-      return false;
-    }
-    return "T".equalsIgnoreCase(str) || "TRUE".equalsIgnoreCase(str);
-  }
-
-  public static int[] stringToArrayInt(String arrIntVal) {
-    return stringToArrayInt(arrIntVal, ",");
-  }
-
-  public static int[] stringToArrayInt(String arrIntVal, String div) {
-
-    String[] strArtIds = StringUtils.split(arrIntVal, div);
-    int[] artIds = new int[strArtIds.length];
-    for (int i = 0; i < strArtIds.length; i++) {
-      artIds[i] = Integer.parseInt(strArtIds[i]);
-    }
-    return artIds;
-  }
-
-  private static final long byteSize = 1024;
-
-  public static String toFileSize(long size) {
-    NumberFormat nf = NumberFormat.getInstance();
-    long result = 0;
-    if (size < byteSize) {
-      result = (size != 0) ? 1 : 0;
-    } else {
-      long modSize = size % byteSize;
-      if (modSize != 0) {
-        result = (size / byteSize) + 1;
-
-      } else {
-        result = (size / byteSize);
-      }
-    }
-
-    return nf.format(result) + " KB";
-  }
-
-  public static String filterHTML(String value) {
-    if (value == null) {
-      return (null);
-    }
-
-    char content[] = new char[value.length()];
-    value.getChars(0, value.length(), content, 0);
-    StringBuilder result = new StringBuilder(content.length + 50);
-    for (int i = 0; i < content.length; i++) {
-      switch (content[i]) {
-        case '<':
-          result.append("&lt;");
-          break;
-        case '>':
-          result.append("&gt;");
-          break;
-        case '&':
-          result.append("&amp;");
-          break;
-        case '"':
-          result.append("&quot;");
-          break;
-        case '\'':
-          result.append("&#39;");
-          break;
-        case ' ':
-          result.append("&nbsp;");
-          break;
-        default:
-          result.append(content[i]);
-      }
-    }
-    return (result.toString());
-  }
-
-  public static String toString(Object value) {
-    return (value == null) ? null : value.toString();
-  }
-
-  public static boolean isBetween(String value, String start, String end) {
-    return startsWith(value, start) && endsWith(value, end);
-  }
-
-  public static String toString(Object value, String defaultString) {
-    return (value == null) ? defaultString : value.toString();
-  }
-
-  public static String toHexString(byte[] b) throws Exception {
-    String result = "";
-    for (int i = 0; i < b.length; i++) {
-      result += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);
-    }
-    return result;
-  }
+	public static String toHexString(byte[] b) throws Exception {
+		StringBuilder result = new StringBuilder();
+		for (byte value : b) {
+			result.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));
+		}
+		return result.toString();
+	}
 }
