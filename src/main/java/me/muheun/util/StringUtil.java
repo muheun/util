@@ -222,7 +222,94 @@ public abstract class StringUtil extends StringUtils {
 	}
 
 	public static String toString(Object value, String defaultString) {
-		return (value == null) ? defaultString : value.toString();
+		return (value == null || value.toString().isEmpty()) ? defaultString : value.toString();
+	}
+
+	/**
+	 * <p>
+	 * 문자 또는 숫자가 null, 공백일 경우 Empty 반환하고, 그 외는 trim 적용후 리턴한다.
+	 * </p>
+	 * <p/>
+	 * <pre>
+	 * StringUtil.clean(null)    = ""
+	 * StringUtil.clean("")      = ""
+	 * StringUtil.clean("  ")    = ""
+	 * StringUtil.clean(" abc ") = "abc"
+	 * StringUtil.clean(12345)   = "12345"
+	 * </pre>
+	 *
+	 * @param object (변경할 문자형, 숫자형 객체)
+	 * @return String (변경후 문자)
+	 */
+	public static String clean(Object object) {
+		return clean(object, EMPTY);
+	}
+
+	/**
+	 * <p>
+	 * 문자 또는 숫자가 null, 공백일 경우 새로운 문자를 반환하고, 그 외는 trim 적용후 리턴한다.
+	 * </p>
+	 * <p/>
+	 * <pre>
+	 * StringUtil.clean(null, "xyz") = "xyz"
+	 * StringUtil.clean("", "xyz")   = "xyz"
+	 * StringUtil.clean("  ", "xyz") = "xyz"
+	 * StringUtil.clean(" abc ", *)  = "abc"
+	 * StringUtil.clean(123, *)      = "123"
+	 * </pre>
+	 *
+	 * @param object (적용할 문자형, 숫자형 객체)
+	 * @param newStr (새로운 문자)
+	 * @return String (적용후 문자)
+	 */
+	public static String clean(Object object, String newStr) {
+		return toString(object, newStr).trim();
+	}
+
+	/**
+	 * <p>
+	 * 문자 또는 숫자가 null, 공백일 경우 새로운 int 형을 반환하고, 그 외는 trim 적용후 int 형으로 변경후 리턴한다.
+	 * </p>
+	 * <p/>
+	 * <pre>
+	 * StringUtil.clean(null, 567)       = 567
+	 * StringUtil.clean("", 567)         = 567
+	 * StringUtil.clean("  ", 567)       = 567
+	 * StringUtil.clean(" 123 ", *)      = 123
+	 * StringUtil.clean(123, *)          = 123
+	 * StringUtil.clean("2147483647", *) = 2147483647
+	 * StringUtil.clean("2147483648", *) = throws java.lang.NumberFormatException
+	 * </pre>
+	 *
+	 * @param object (변경할 문자형, 숫자형 객체)
+	 * @param newInt (새로운 숫자)
+	 * @return int (변경후 숫자)
+	 */
+	public static int clean(Object object, int newInt) {
+		return NumberUtil.toInt(clean(object, toString(newInt)));
+	}
+
+	/**
+	 * <p>
+	 * 문자 또는 숫자가 null, 공백일 경우 새로운 long 형을 반환하고, 그 외는 trim 적용후 long 형으로 변경후 리턴한다.
+	 * </p>
+	 * <p/>
+	 * <pre>
+	 * StringUtil.clean(null, 567)       = 567
+	 * StringUtil.clean("", 567)         = 567
+	 * StringUtil.clean("  ", 567)       = 567
+	 * StringUtil.clean(" 123 ", *)      = 123
+	 * StringUtil.clean(123, *)          = 123
+	 * StringUtil.clean("2147483647", *) = 2147483647
+	 * StringUtil.clean("2147483648", *) = 2147483648
+	 * </pre>
+	 *
+	 * @param object  (변경할 문자형, 숫자형 객체)
+	 * @param newLong (새로운 숫자)
+	 * @return long (변경후 숫자)
+	 */
+	public static long clean(Object object, long newLong) {
+		return NumberUtil.toLong(clean(object, toString(newLong)));
 	}
 
 	public static String toHexString(byte[] b) throws Exception {
