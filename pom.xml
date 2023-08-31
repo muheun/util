@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.0.4</version>
+    <version>3.1.1</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
@@ -17,7 +17,7 @@
 
   <properties>
     <my-framework.version>0.5</my-framework.version>
-    <spring-boot.version>3.0.4</spring-boot.version>
+    <spring-boot.version>3.1.1</spring-boot.version>
     <lombok.version>1.18.26</lombok.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -60,6 +60,10 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
