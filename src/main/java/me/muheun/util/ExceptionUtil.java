@@ -1,151 +1,75 @@
 package me.muheun.util;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 @Slf4j
 public class ExceptionUtil extends ExceptionUtils {
 
-	/**
-	 * <p>
-	 * Error 정보를 Console에 출력한다.
-	 * </p>
-	 *
-	 * @param e (Exception 객체)
-	 */
-	public static void printConsole(Exception e, boolean full, String... messages) {
+	public static void printStackTrace(final Throwable throwable) {
+		printStackTrace(throwable, 15);
+	}
+
+	public static void printStackTrace(final Throwable throwable, final int limit) {
+		if (throwable == null) {
+			return;
+		}
 		StringBuilder sb = new StringBuilder("\n\n");
-//        sb.append("+=================================================================================================================================+\n");
-		if (!full) {
-			sb.append(getShortStackTrace(e)).append("\n");
-			for (String msg : messages) {
-				sb.append("\t\t").append(msg).append("\n");
-			}
-		} else {
-			for (String msg : getRootCauseStackTrace(e)) {
-				sb.append(msg).append("\n");
-			}
+		final String[] trace = getRootCauseStackTrace(throwable, limit);
+		for (final String element : trace) {
+			sb.append(element).append("\n");
 		}
 		sb.append("\n");
-//        sb.append("+=================================================================================================================================+\n");
 		log.debug(sb.toString());
-		sb = null;
 	}
 
-	public static void printConsole(Exception e, String... messages) {
-		printConsole(e, false, messages);
-	}
-
-	public static void printConsole(Exception e) {
-		printConsole(e, false);
-	}
-
-	public static void printConsole(Exception e, boolean full) {
-		printConsole(e, full, new String[0]);
-	}
-
-	/**
-	 * <p>
-	 * Error 정보를 Console에 출력한다.
-	 * </p>
-	 *
-	 * @param e       (Exception 객체)
-	 * @param clazz   (에러가 발생한 Class 객체)
-	 * @param message (추가할 Exception 메시지)
-	 */
-	public static void printConsole(Exception e, Class<?> clazz, String message) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		sb.append(
-				"+---------------------------------------------------------------------------------------------------------------------------------+\n");
-		sb.append("[").append(DateUtil.getNowAll()).append("] [ERROR] ").append(clazz.getName()).append("\n");
-		sb.append("(").append(e.toString()).append(") - ").append(StringUtil.clean(message)).append("\n");
-		sb.append(
-				"+---------------------------------------------------------------------------------------------------------------------------------+\n");
-		log.debug(sb.toString());
-		sb = new StringBuilder();
-		sb.append(
-				"\n+=================================================================================================================================+\n");
-		sb.append(getShortStackTrace(e));
-		sb.append(
-				"\n+=================================================================================================================================+\n");
-		log.debug(sb.toString());
-		sb = null;
-	}
-
-	/**
-	 * <p>
-	 * 짧은 Exception StackTrace를 리턴한다.
-	 * </p>
-	 *
-	 * @param e (Exception 객체)
-	 * @return String (Exception StackTrace)
-	 */
-	public static String getShortStackTrace(Exception e) {
-		StackTraceElement[] ste = e.getStackTrace();
-		String className = ste[0].getClassName();
-		String methodName = ste[0].getMethodName();
-		String fileName = ste[0].getFileName();
-		int lineNumber = ste[0].getLineNumber();
-		String exceptionClassName = StringUtil.clean(e.getClass()).replaceFirst("class ", "");
-		//        sb.append(exceptionClassName).append("\n");
-		return exceptionClassName + ": " + e.getMessage() + "\n"
-				+ "\tat " + className + "." + methodName
-				+ "(" + fileName + ":" + lineNumber + ")";
-	}
-
-	/**
-	 * <p>
-	 * Exception StackTrace를 리턴한다.
-	 * </p>
-	 *
-	 * @param e (Exception 객체)
-	 * @return String (Exception StackTrace)
-	 */
-	public static String getStackTrace(Exception e) {
-		StringBuffer sb = null;
-		StringWriter sw = null;
-		PrintWriter pw = null;
-		try {
-			sw = new StringWriter();
-			pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			sb = sw.getBuffer();
-			return sb.toString();
-		} catch (Exception e2) {
-			log.warn("Exception StackTrace를 가져올 수 없습니다.");
-		} finally {
-			if (pw != null) {
-				try {
-					pw.close();
-				} catch (Exception ignored) {
-				}
+	private static String[] getRootCauseStackTrace(final Throwable throwable, int limit) {
+		if (throwable == null) {
+			return ArrayUtils.EMPTY_STRING_ARRAY;
+		}
+		final Throwable[] throwables = getThrowables(throwable);
+		final int count = throwables.length;
+		final List<String> frames = new ArrayList<>();
+		List<String> nextTrace = getStackFrameList(throwables[count - 1], limit);
+		for (int i = count; --i >= 0; ) {
+			final List<String> trace = nextTrace;
+			if (i != 0) {
+				nextTrace = getStackFrameList(throwables[i - 1], limit);
+				removeCommonFrames(trace, nextTrace);
 			}
-			if (sw != null) {
-				try {
-					sw.close();
-				} catch (Exception ignored) {
+			if (i == count - 1) {
+				frames.add(throwables[i].toString());
+			} else {
+				frames.add(" [wrapped] " + throwables[i].toString());
+			}
+			frames.addAll(trace);
+		}
+		return frames.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+	}
+
+	private static List<String> getStackFrameList(final Throwable t, int limit) {
+		final String stackTrace = getStackTrace(t);
+		final String linebreak = System.lineSeparator();
+		final StringTokenizer frames = new StringTokenizer(stackTrace, linebreak);
+		final List<String> list = new ArrayList<>();
+		int line = 1;
+		while (frames.hasMoreTokens()) {
+			final String token = frames.nextToken();
+			// Determine if the line starts with <whitespace>at
+			final int at = token.indexOf("at");
+			if (at != -1 && token.substring(0, at).trim().isEmpty()) {
+				if (limit > 0 && limit == line) {
+					break;
 				}
+				list.add(token);
+				line++;
 			}
 		}
-		return "";
-	}
-
-	/**
-	 * <p>
-	 * Exception 메시지에 사용자 메시지를 추가하여 리턴한다.
-	 * </p>
-	 *
-	 * @param e       (Exception 객체)
-	 * @param message (추가할 Exception 메시지)
-	 * @return String (Exception 메시지)
-	 */
-	public static String addMessage(Exception e, String message) {
-		return e.toString() + "\n"
-				+ "Stacktrace: " + getStackTrace(e)
-				+ "Caused by: " + message + "\n";
+		return list;
 	}
 
 }
