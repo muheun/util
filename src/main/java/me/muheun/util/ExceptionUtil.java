@@ -20,11 +20,11 @@ public class ExceptionUtil extends ExceptionUtils {
 		}
 		StringBuilder sb = new StringBuilder("\n\n");
 		final String[] trace = getRootCauseStackTrace(throwable, limit);
-		for (final String element : trace) {
-			sb.append(element).append("\n");
+		for (int i = 0; i < trace.length; i++) {
+			sb.append(String.format("%3s", i + 1)).append(" > ").append(trace[i]).append("\n");
 		}
 		sb.append("\n");
-		log.debug(sb.toString());
+		log.error(sb.toString());
 	}
 
 	private static String[] getRootCauseStackTrace(final Throwable throwable, int limit) {
