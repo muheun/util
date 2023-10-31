@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+  <Properties>
+    <Property name="logNm">izenimplant</Property>
+    <Property name="layoutPattern">%d [%t] %-5level %c(%M:%L) - %m%n</Property>
+  </Properties>
+
+  <Appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="${layoutPattern}"/>
+    </Console>
+
+<!--    <RollingFile name="file" fileName="/log/${logNm}.log"-->
+<!--      filePattern="/log/log_backup/${logNm}_%d{yyyy-MM-dd}_%i.log">-->
+<!--      <PatternLayout pattern="${layoutPattern}"/>-->
+<!--      <Policies>-->
+<!--        <SizeBasedTriggeringPolicy size="50MB"/> &lt;!&ndash; 10MB 용량이 초과시 DefaultRolloverStrategy 정책만큼 넘버링 &ndash;&gt;-->
+<!--        <TimeBasedTriggeringPolicy modulate="true"-->
+<!--          interval="1"/>&lt;!&ndash; 일별 로그 파일 생성 &ndash;&gt;-->
+<!--      </Policies>-->
+<!--      <DefaultRolloverStrategy max="500"-->
+<!--        fileIndex="min"/>&lt;!&ndash; 롤링 파일 500개 까지 생성 &ndash;&gt;-->
+<!--    </RollingFile>-->
+  </Appenders>
+
+  <Loggers>
+
+    <!-- 기본 레벨은 debug -->
+    <Root level="debug" additivity="false">
+      <AppenderRef ref="console"/>
+<!--      <AppenderRef ref="file"/>-->
+    </Root>
+
+    <!-- 다른 기본 패키지도 설정 제어 가능하다. -->
+    <logger name="me.muheun" level="debug" additivity="false">
+      <AppenderRef ref="console"/>
+      <!--      <AppenderRef ref="file" />-->
+    </logger>
+
+  </Loggers>
+
+</Configuration>
